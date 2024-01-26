@@ -2,16 +2,17 @@ package constants
 
 const (
 	// Error codes
-	NotFound            = "ZM-404"
-	BadRequest          = "ZM-400"
-	Unauthorized        = "ZM-401"
-	Forbidden           = "ZM-403"
-	InternalServerError = "ZM-500"
+	NotFound            = "KV-404"
+	BadRequest          = "KV-400"
+	Unauthorized        = "KV-401"
+	Forbidden           = "KV-403"
+	InternalServerError = "KV-500"
 
 	// Messages
-	EntityNotFound         = "%s with id %s not found"
+	EntityNotFound = "%s with id %s not found"
 
 	// Queries
-	FindByIdQuery = "id = ?"
-	FindByTenantIdAndKey = "tenant_id = ? AND id = ?"
+	FindByIdQuery             = "id = ?"
+	FindByTenantIdAndKeyQuery = "tenant_id = ? AND id = ?"
+	FindExpiredRecordsQuery   = "expires_at < NOW()"
 )
