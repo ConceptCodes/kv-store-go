@@ -1,0 +1,6 @@
+{
+  "default_ttl": 3600,
+  "port": 8080,
+  "key_regex": "^[a-zA-Z0-9_]+$",
+  "value_regex": "^[a-zA-Z0-9_]+$"
+}
