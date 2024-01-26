@@ -42,7 +42,6 @@ func main() {
 	router.Use(middlewares.LogRequest)
 	router.Use(middlewares.LogResponse)
 	router.NotFoundHandler = middlewares.NotFound(nil)
-	// router.Use(middlewares.NotFound)
 
 	router.HandleFunc("/api/health/alive", healthHandler.ServiceAliveHandler).Methods("GET")
 
@@ -55,14 +54,13 @@ func main() {
 	srv := &http.Server{
 		Handler:      router,
 		Addr:         fmt.Sprintf("127.0.0.1:%s", port),
-		WriteTimeout: 15 * time.Second,
-		ReadTimeout:  15 * time.Second,
+		WriteTimeout: time.Duration(config.AppConfig.Timeout) * time.Second,
+		ReadTimeout:  time.Duration(config.AppConfig.Timeout) * time.Second,
 	}
 
 	log.Printf("KV Store Api started on port %s", port)
 
-	log.Fatal(srv.ListenAndServe())
-
 	helpers.RecordDeletionCronJob(recordRepo)
 
+	log.Fatal(srv.ListenAndServe())
 }

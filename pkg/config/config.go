@@ -7,8 +7,9 @@ import (
 )
 
 type Config struct {
-	DefaultTTL int `mapstructure:"defualt_ttl"`
-	Port       int `mapstructure:"port"`
+	DefaultTTL uint `mapstructure:"defualt_ttl"`
+	Port       int  `mapstructure:"port"`
+	Timeout    int  `mapstructure:"timeout"`
 }
 
 var AppConfig *Config
