@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"kv-store/pkg/config"
 	"kv-store/pkg/constants"
 	"kv-store/pkg/helpers"
 	"kv-store/pkg/models"
@@ -23,7 +24,6 @@ func NewRecordHandler(recordRepo repository.RecordRepository) *RecordHandler {
 	return &RecordHandler{recordRepo: recordRepo}
 }
 
-// get record
 func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context().Value("ctx").(*models.Request)
 
@@ -47,7 +47,6 @@ func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request)
 	return
 }
 
-// save record
 func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request) {
 	var data models.SaveRecordRequest
 
@@ -55,9 +54,14 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 
 	if err != nil {
 		helpers.SendErrorResponse(w, err.Error(), constants.BadRequest)
+		return
 	}
 
 	helpers.ValidateStruct(w, &data)
+
+	if data.TTL < config.AppConfig.DefaultTTL {
+		helpers.SendErrorResponse(w, "TTL cannot be less than default TTL", constants.BadRequest)
+	}
 
 	ctx := r.Context().Value("ctx").(*models.Request)
 
@@ -72,6 +76,7 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 
 	if err != nil {
 		helpers.SendErrorResponse(w, "Unable to save record. Please try again.", constants.InternalServerError)
+		return
 	}
 
 	helpers.SendSuccessResponse(w, "Successfully saved record.", tmp)
