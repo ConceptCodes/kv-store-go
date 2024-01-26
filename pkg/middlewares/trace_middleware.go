@@ -30,13 +30,14 @@ func TraceRequest(next http.Handler) http.Handler {
 		if authToken != "" {
 			authToken = strings.Replace(authToken, "Bearer ", "", 1)
 
-			user, err := helpers.ValidateToken(authToken)
+			_user, err := helpers.ValidateToken(authToken)
 
 			if err != nil {
 				log.Printf("Error: %s", err)
 			}
 
-			log.Printf("User Id: %s", user.ID)
+			user = _user
+
 		}
 
 		model := &models.Request{
