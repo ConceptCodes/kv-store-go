@@ -18,4 +18,11 @@ const (
 
 	// Cron
 	BufferTime = 10
+
+	// Headers
+	TraceIdHeader = "X-Trace-Id"
+
+	// Misc
+	Separator = "============================================================================"
+
 )
