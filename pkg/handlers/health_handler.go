@@ -13,4 +13,5 @@ func NewHealthHandler() *HealthHandler {
 
 func (h *HealthHandler) ServiceAliveHandler(w http.ResponseWriter, r *http.Request) {
 	helpers.SendSuccessResponse(w, "Service is alive", nil)
+	return
 }

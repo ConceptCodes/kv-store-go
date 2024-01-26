@@ -31,6 +31,7 @@ func (h *TenantHandler) OnboardTenantHandler(w http.ResponseWriter, r *http.Requ
 
 	if err != nil {
 		helpers.SendErrorResponse(w, err.Error(), constants.InternalServerError)
+		return
 	}
 
 	res := &models.OnboardTenantResponse{
@@ -39,4 +40,5 @@ func (h *TenantHandler) OnboardTenantHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	helpers.SendSuccessResponse(w, "Tenant onboarded successfully", res)
+	return
 }

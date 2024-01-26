@@ -35,6 +35,7 @@ func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		message := fmt.Sprintf(constants.EntityNotFound, "Tenant", id)
 		helpers.SendErrorResponse(w, message, constants.NotFound)
+		return
 	}
 
 	res := &models.GetRecordResponse{
@@ -43,6 +44,7 @@ func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	helpers.SendSuccessResponse(w, "Tenant Found Successfully", res)
+	return
 }
 
 // save record
@@ -73,5 +75,5 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	helpers.SendSuccessResponse(w, "Successfully saved record.", tmp)
-
+	return
 }
