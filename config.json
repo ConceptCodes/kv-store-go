@@ -1,5 +1,5 @@
 {
-  "default_ttl": 3600,
+  "default_ttl": 60,
   "port": 8080,
   "timeout": 10
 }
