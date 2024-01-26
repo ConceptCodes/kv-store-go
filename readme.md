@@ -43,7 +43,7 @@ A [Microservice](https://microservices.io/) for Key-Value Storage
   }
   ```
 
-3. Onboard a new tenant. this action will add an authorization header. Utilize this header for all subsequent requests.
+3. Onboard a new tenant. This action will add an authorization header to the response. Utilize this header for all subsequent requests.
 
   ```sh
   curl --location 'http://localhost:8080/api/tenant/onboard'
