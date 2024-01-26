@@ -6,6 +6,7 @@ import (
 	_cron "github.com/robfig/cron/v3"
 
 	"kv-store/pkg/config"
+	"kv-store/pkg/constants"
 	"kv-store/pkg/cron"
 	repository "kv-store/pkg/repositories"
 )
@@ -13,15 +14,15 @@ import (
 func RecordDeletionCronJob(recordRepo repository.RecordRepository) {
 	c := _cron.New()
 
-	_, err := cron.AddJob(c, fmt.Sprintf("*/%d * * * *", config.AppConfig.DefaultTTL), func() {
-		// fetch all expired records
+	time := fmt.Sprintf("*/%d * * * *", config.AppConfig.DefaultTTL+constants.BufferTime)
+
+	_, err := cron.AddJob(c, time, func() {
 		records, err := recordRepo.FindExpiredRecords()
 		if err != nil {
 			fmt.Println("Error fetching expired records: ", err)
 			return
 		}
 
-		// delete all expired records
 		for _, record := range records {
 			err := recordRepo.Delete(record.TenantId, record.ID)
 			if err != nil {
