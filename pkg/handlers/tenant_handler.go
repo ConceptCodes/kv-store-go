@@ -39,6 +39,7 @@ func (h *TenantHandler) OnboardTenantHandler(w http.ResponseWriter, r *http.Requ
 		TenantSecret: tenantSecret,
 	}
 
+	w.Header().Set("Authorization", "Bearer "+helpers.GenerateToken(tenantId, tenantSecret))
 	helpers.SendSuccessResponse(w, "Tenant onboarded successfully", res)
 	return
 }

@@ -46,3 +46,7 @@ func ValidateToken(token string) (*models.UserModel, error) {
 
 	return nil, err
 }
+
+func GenerateToken(tenantId string, tenantSecret string) string {
+	return base64.StdEncoding.EncodeToString([]byte(tenantId + ":" + tenantSecret))
+}
