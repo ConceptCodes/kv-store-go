@@ -3,7 +3,6 @@ package helpers
 import (
 	"fmt"
 	"net/http"
-	"regexp"
 	"strings"
 
 	"kv-store/pkg/constants"
@@ -15,12 +14,19 @@ var validate *validator.Validate
 
 func init() {
 	validate = validator.New()
-	_ = validate.RegisterValidation("regexp", func(fl validator.FieldLevel) bool {
-		pattern := fl.Param()
+	validate.RegisterValidation("noSQLKeywords", noSQLKeywords)
+}
 
-		re := regexp.MustCompile(pattern)
-		return re.MatchString(fl.Field().String())
-	})
+func noSQLKeywords(fl validator.FieldLevel) bool {
+	sqlKeywords := []string{"SELECT", "FROM", "WHERE", "DELETE", "UPDATE", "INSERT", "DROP", "CREATE", "ALTER", "TRUNCATE"}
+
+	value := fl.Field().String()
+	for _, keyword := range sqlKeywords {
+		if strings.Contains(strings.ToUpper(value), keyword) {
+			return false
+		}
+	}
+	return true
 }
 
 func ValidateStruct(w http.ResponseWriter, s interface{}) {

@@ -11,8 +11,7 @@ import (
 	repository "kv-store/pkg/repositories"
 )
 
-func RecordDeletionCronJob(recordRepo repository.RecordRepository) {
-	c := _cron.New()
+func RecordDeletionCronJob(c *_cron.Cron, recordRepo repository.RecordRepository) {
 
 	time := fmt.Sprintf("*/%d * * * *", config.AppConfig.DefaultTTL+constants.BufferTime)
 
@@ -41,5 +40,4 @@ func RecordDeletionCronJob(recordRepo repository.RecordRepository) {
 
 	c.Start()
 
-	select {}
 }

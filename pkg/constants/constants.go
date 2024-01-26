@@ -14,7 +14,7 @@ const (
 	// Queries
 	FindByIdQuery             = "id = ?"
 	FindByTenantIdAndKeyQuery = "tenant_id = ? AND id = ?"
-	FindExpiredRecordsQuery   = "expires_at < NOW()"
+	FindExpiredRecordsQuery   = "expires_at < DATETIME('now')"
 
 	// Cron
 	BufferTime = 10

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	_cron "github.com/robfig/cron/v3"
 
 	"kv-store/pkg/config"
 	"kv-store/pkg/handlers"
@@ -41,13 +42,13 @@ func main() {
 	router.Use(middlewares.TraceRequest)
 	router.Use(middlewares.LogRequest)
 	router.Use(middlewares.LogResponse)
-	router.NotFoundHandler = middlewares.NotFound(nil)
+	// router.NotFoundHandler = middlewares.NotFound(nil)
 
 	router.HandleFunc("/api/health/alive", healthHandler.ServiceAliveHandler).Methods("GET")
 
 	router.HandleFunc("/api/tenant/onboard", tenantHandler.OnboardTenantHandler).Methods("GET")
 
-	router.HandleFunc("/api/records/{id:^[a-zA-Z0-9]*$}", recordHandler.GetRecordHandler).Methods("GET")
+	router.HandleFunc("/api/records/{id}", recordHandler.GetRecordHandler).Methods("GET")
 	router.HandleFunc("/api/records", recordHandler.SaveRecordHandler).Methods("POST")
 
 	port := fmt.Sprint(config.AppConfig.Port)
@@ -60,7 +61,12 @@ func main() {
 
 	log.Printf("KV Store Api started on port %s", port)
 
-	helpers.RecordDeletionCronJob(recordRepo)
+	c := _cron.New()
+
+	helpers.RecordDeletionCronJob(c, recordRepo)
 
 	log.Fatal(srv.ListenAndServe())
+
+	select {}
+
 }

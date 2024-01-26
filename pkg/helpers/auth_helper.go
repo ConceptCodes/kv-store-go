@@ -2,33 +2,40 @@ package helpers
 
 import (
 	"encoding/base64"
+	"errors"
 	"kv-store/pkg/models"
 	repository "kv-store/pkg/repositories"
 	"kv-store/pkg/storage/sqlite"
 	"log"
+	"strings"
 )
 
 func ValidateToken(token string) (*models.UserModel, error) {
 	db, err := sqlite.GetDBInstance()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Print(err)
 	}
 
 	tenantRepo := repository.NewGormTenantRepository(db)
 
 	data, err := base64.StdEncoding.DecodeString(token)
 	if err != nil {
-		log.Fatal("error:", err)
+		return nil, err
 	}
 
-	tenantId := string(data[:][0])
-	tenantSecret := string(data[:][1])
+	parts := strings.Split(string(data), ":")
+	if len(parts) < 2 {
+		return nil, errors.New("invalid token format")
+	}
+
+	tenantId := parts[0]
+	tenantSecret := parts[1]
 
 	tenant, err := tenantRepo.FindById(tenantId)
 
 	if err != nil {
-		log.Fatal("error:", err)
+		return nil, err
 	}
 
 	if tenant.Secret == tenantSecret {
@@ -36,6 +43,6 @@ func ValidateToken(token string) (*models.UserModel, error) {
 			ID: tenant.ID,
 		}, nil
 	}
-	
+
 	return nil, err
 }

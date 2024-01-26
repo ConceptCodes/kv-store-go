@@ -10,13 +10,15 @@ type GetRecordRequest struct {
 	Key      string `json:"key"`
 }
 
-type GetRecordResponse struct {
+type SimpleRecordResponse struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }
 
 type SaveRecordRequest struct {
-	Key   string `json:"key" validate:"required, regexp=^[a-zA-Z0-9]*$"`
-	Value string `json:"value" validate:"required, regexp=^[a-zA-Z0-9]*$"`
+	Key   string `json:"key" validate:"required,noSQLKeywords"`
+	Value string `json:"value" validate:"required,noSQLKeywords"`
 	TTL   uint   `json:"ttl"`
 }
+
+

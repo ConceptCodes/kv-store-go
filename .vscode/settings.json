@@ -1,5 +1,14 @@
 {
   "cSpell.words": [
     "gorm"
+  ],
+  "sqltools.useNodeRuntime": true,
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "driver": "SQLite",
+      "name": "KV Store",
+      "database": "${workspaceFolder:kv-store-go}/test.db"
+    }
   ]
 }

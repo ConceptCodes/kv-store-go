@@ -3,15 +3,17 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
+	"github.com/gorilla/mux"
+
 	"kv-store/pkg/config"
 	"kv-store/pkg/constants"
 	"kv-store/pkg/helpers"
 	"kv-store/pkg/models"
 	repository "kv-store/pkg/repositories"
-	"net/http"
-	"time"
-
-	"github.com/gorilla/mux"
 )
 
 type RecordHandler struct {
@@ -32,18 +34,20 @@ func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request)
 
 	record, err := h.recordRepo.FindById(ctx.Id, id)
 
+	log.Printf("Tenant [%s] is looking for a record with id: %s", ctx.User.ID, id)
+
 	if err != nil {
-		message := fmt.Sprintf(constants.EntityNotFound, "Tenant", id)
+		message := fmt.Sprintf(constants.EntityNotFound, "Record", id)
 		helpers.SendErrorResponse(w, message, constants.NotFound)
 		return
 	}
 
-	res := &models.GetRecordResponse{
+	res := &models.SimpleRecordResponse{
 		Key:   record.ID,
 		Value: record.Value,
 	}
 
-	helpers.SendSuccessResponse(w, "Tenant Found Successfully", res)
+	helpers.SendSuccessResponse(w, "Record Found Successfully", res)
 	return
 }
 
@@ -58,6 +62,10 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	helpers.ValidateStruct(w, &data)
+
+	if data.TTL == 0 {
+		data.TTL = config.AppConfig.DefaultTTL
+	}
 
 	if data.TTL < config.AppConfig.DefaultTTL {
 		helpers.SendErrorResponse(w, "TTL cannot be less than default TTL", constants.BadRequest)
@@ -79,6 +87,11 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	helpers.SendSuccessResponse(w, "Successfully saved record.", tmp)
+	res := &models.SimpleRecordResponse{
+		Key:   tmp.ID,
+		Value: tmp.Value,
+	}
+
+	helpers.SendSuccessResponse(w, "Successfully saved record.", res)
 	return
 }
