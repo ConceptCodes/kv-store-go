@@ -32,6 +32,7 @@ func main() {
 	router.Use(middlewares.TraceRequest)
 	router.Use(middlewares.LogRequest)
 	router.Use(middlewares.LogResponse)
+	// router.Use(middlewares.NotFound)
 
 	router.HandleFunc("/api/health/alive", healthHandler.ServiceAliveHandler).Methods("GET")
 
