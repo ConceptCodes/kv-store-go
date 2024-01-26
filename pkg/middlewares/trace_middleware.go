@@ -8,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 
+	"kv-store/pkg/constants"
 	"kv-store/pkg/helpers"
 	"kv-store/pkg/models"
 )
@@ -15,13 +16,13 @@ import (
 func TraceRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		requestId := r.Header.Get("x-request-id")
+		requestId := r.Header.Get(constants.TraceIdHeader)
 
 		if requestId == "" {
 			requestId = uuid.New().String()
 		}
 
-		w.Header().Add("x-request-id", requestId)
+		w.Header().Add(constants.TraceIdHeader, requestId)
 
 		authToken := r.Header.Get("Authorization")
 		user := &models.UserModel{}
