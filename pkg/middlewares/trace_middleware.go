@@ -35,10 +35,8 @@ func TraceRequest(next http.Handler) http.Handler {
 				log.Printf("Error: %s", err)
 			}
 
-			log.Printf("User Id: %d", user.ID)
+			log.Printf("User Id: %s", user.ID)
 		}
-
-		log.Printf("Request Id: %s", requestId)
 
 		model := &models.Request{
 			Id:   requestId,

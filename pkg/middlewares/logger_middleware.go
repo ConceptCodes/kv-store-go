@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"bytes"
+	"kv-store/pkg/models"
 	"log"
 	"net/http"
 )
@@ -19,11 +20,13 @@ func (rw *responseWriter) Write(b []byte) (int, error) {
 func LogRequest(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		log.Printf("%s %s", r.Method, r.URL.Path)
+		ctx := r.Context().Value("ctx").(*models.Request)
+
+		log.Printf("[%s] %s %s", ctx.Id, r.Method, r.URL.Path)
 
 		if r.Method == "POST" || r.Method == "PUT" {
 			r.ParseForm()
-			log.Printf("Request Body: %s", r.Form)
+			log.Printf("[%s] Request Body: %s", ctx.Id, r.Form)
 		}
 
 		next.ServeHTTP(w, r)
@@ -34,7 +37,8 @@ func LogRequest(next http.Handler) http.Handler {
 func LogResponse(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		rw := &responseWriter{ResponseWriter: w, body: &bytes.Buffer{}}
+		ctx := r.Context().Value("ctx").(*models.Request)
 		next.ServeHTTP(rw, r)
-		log.Printf("Response Body: %s", rw.body.String())
+		log.Printf("[%s] Response Body: %s", ctx.Id, rw.body.String())
 	})
 }
