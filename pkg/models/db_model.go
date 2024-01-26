@@ -1,16 +1,18 @@
 package models
 
 import (
+	"time"
+
 	"gorm.io/gorm"
 )
 
 type RecordModel struct {
 	gorm.Model
-	ID       string `gorm:"primaryKey;type:text;unique_index"`
-	TenantId string `gorm:"primaryKey;type:varchar(36);foreignkey:TenantRefer"`
-	Value    string `gorm:"type:text"`
-	TTL      uint64 `gorm:"type:uint"`
-	Tenant   TenantModel
+	ID        string    `gorm:"primaryKey;type:text;unique_index"`
+	TenantId  string    `gorm:"primaryKey;type:varchar(36);foreignkey:TenantRefer"`
+	Value     string    `gorm:"type:text"`
+	ExpiresAt time.Time `gorm:"type:timestamp"`
+	Tenant    TenantModel
 }
 
 type TenantModel struct {

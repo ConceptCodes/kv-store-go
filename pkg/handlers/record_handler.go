@@ -8,6 +8,7 @@ import (
 	"kv-store/pkg/models"
 	repository "kv-store/pkg/repositories"
 	"net/http"
+	"time"
 
 	"github.com/gorilla/mux"
 )
@@ -59,10 +60,10 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 	ctx := r.Context().Value("ctx").(*models.Request)
 
 	tmp := &models.RecordModel{
-		ID:       data.Key,
-		Value:    data.Value,
-		TTL:      uint64(data.TTL),
-		TenantId: ctx.User.ID,
+		ID:        data.Key,
+		Value:     data.Value,
+		ExpiresAt: time.Now().Add(time.Duration(data.TTL) * time.Second),
+		TenantId:  ctx.User.ID,
 	}
 
 	err = h.recordRepo.Save(tmp)
