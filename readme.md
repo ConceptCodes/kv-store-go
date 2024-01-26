@@ -22,9 +22,86 @@ A [Microservice](https://microservices.io/) for Key-Value Storage
    cd kv-store-go
    ```
 
-## Usage
+## Usage (Api)
+
+1. Run the server
+
+  ```sh
+  go run cmd/server/main.go
+  ```
+
+2. Verify that the service is running
+
+  ```sh
+  curl http://localhost:8080/health/alive
+  ```
+  ```json
+  {
+    "message": "Service is alive",
+    "data": null,
+    "error_code": ""
+  }
+  ```
+
+3. Onboard a new tenant. this action will add an authorization header. Utilize this header for all subsequent requests.
+
+  ```sh
+  curl --location 'http://localhost:8080/api/tenant/onboard'
+  ```
+  ```json
+  {
+    "message": "Tenant onboarded successfully",
+    "data": {
+        "tenant_id": "sample_tenant_id",
+        "tenant_secret": "sample_tenant_secret"
+    },
+    "error_code": ""
+  }
+  ```
+
+4. Create a new key-value pair
+
+  ```sh
+  curl --location 'http://localhost:8080/api/records' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer <sample_auth_token>' \
+  --data '{
+      "key": "long",
+      "value": "word",
+      "ttl": 3600
+  }'
+  ```
+  ```json
+  {
+    "message": "Record created successfully",
+    "data": {
+        "key": "long",
+        "value": "word",
+    },
+    "error_code": ""
+  }
+  ```
+
+5. Get a key-value pair
+
+  ```sh
+  curl --location 'http://localhost:8080/api/records/long' \
+  --header 'Authorization: Bearer <sample_auth_token>'
+  ```
+  ```json
+  {
+    "message": "Record Found Successfully",
+    "data": {
+        "key": "long",
+        "value": "world"
+    },
+    "error_code": ""
+  }
+  ```
 
 
 ## Roadmap
 
 - [ ] CLI wrapper over the api
+- [ ] Add known errors to the api
+- [ ] Standard Log Formatting (with log levels)
