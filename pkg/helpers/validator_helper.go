@@ -3,6 +3,7 @@ package helpers
 import (
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 
 	"kv-store/pkg/constants"
@@ -14,6 +15,12 @@ var validate *validator.Validate
 
 func init() {
 	validate = validator.New()
+	_ = validate.RegisterValidation("regexp", func(fl validator.FieldLevel) bool {
+		pattern := fl.Param()
+
+		re := regexp.MustCompile(pattern)
+		return re.MatchString(fl.Field().String())
+	})
 }
 
 func ValidateStruct(w http.ResponseWriter, s interface{}) {

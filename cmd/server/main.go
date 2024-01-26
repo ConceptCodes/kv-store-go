@@ -11,21 +11,25 @@ import (
 	"kv-store/pkg/config"
 	"kv-store/pkg/handlers"
 	"kv-store/pkg/middlewares"
+	repository "kv-store/pkg/repositories"
+	"kv-store/pkg/storage/sqlite"
 )
 
 func main() {
 
 	config.LoadAppConfig()
 
-	// db, err := sqlite.GetDBInstance()
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
+	db, err := sqlite.GetDBInstance()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	// recordRepo := repository.NewGormRecordRepository(db)
-	// tenantRepo := repository.NewGormTenantRepository(db)
+	recordRepo := repository.NewGormRecordRepository(db)
+	tenantRepo := repository.NewGormTenantRepository(db)
 
 	healthHandler := handlers.NewHealthHandler()
+	tenantHandler := handlers.NewTenantHandler(tenantRepo)
+	recordHandler := handlers.NewRecordHandler(recordRepo)
 
 	router := mux.NewRouter()
 
@@ -35,6 +39,11 @@ func main() {
 	// router.Use(middlewares.NotFound)
 
 	router.HandleFunc("/api/health/alive", healthHandler.ServiceAliveHandler).Methods("GET")
+
+	router.HandleFunc("/api/tenant/onboard", tenantHandler.OnboardTenantHandler).Methods("GET")
+
+	router.HandleFunc("/api/records/{id:^[a-zA-Z0-9]*$}", recordHandler.GetRecordHandler).Methods("GET")
+	router.HandleFunc("/api/records", recordHandler.SaveRecordHandler).Methods("POST")
 
 	port := fmt.Sprint(config.AppConfig.Port)
 

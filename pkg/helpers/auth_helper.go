@@ -10,6 +10,7 @@ import (
 
 func ValidateToken(token string) (*models.UserModel, error) {
 	db, err := sqlite.GetDBInstance()
+
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -35,6 +36,6 @@ func ValidateToken(token string) (*models.UserModel, error) {
 			ID: tenant.ID,
 		}, nil
 	}
-	// if the user is not found, i will return an error
+	
 	return nil, err
 }

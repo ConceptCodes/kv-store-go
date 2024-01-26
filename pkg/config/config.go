@@ -7,10 +7,8 @@ import (
 )
 
 type Config struct {
-	DefaultTTL int    `mapstructure:"defualt_ttl"`
-	Port       int    `mapstructure:"port"`
-	KeyRegex   string `mapstructure:"key_regex"`
-	ValueRegex string `mapstructure:"value_regex"`
+	DefaultTTL int `mapstructure:"defualt_ttl"`
+	Port       int `mapstructure:"port"`
 }
 
 var AppConfig *Config
