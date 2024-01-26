@@ -32,7 +32,7 @@ func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request)
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	record, err := h.recordRepo.FindById(ctx.Id, id)
+	record, err := h.recordRepo.FindById(ctx.User.ID, id)
 
 	log.Printf("Tenant [%s] is looking for a record with id: %s", ctx.User.ID, id)
 
