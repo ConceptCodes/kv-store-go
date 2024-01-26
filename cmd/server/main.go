@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"strconv"
+	"time"
 
 	"github.com/gorilla/mux"
 
@@ -35,10 +35,17 @@ func main() {
 
 	router.HandleFunc("/api/health/alive", healthHandler.ServiceAliveHandler).Methods("GET")
 
-	port := strconv.Itoa(config.AppConfig.Port)
+	port := fmt.Sprint(config.AppConfig.Port)
 
-	log.Println(fmt.Printf("KV Store Api started on port %s", port))
+	srv := &http.Server{
+		Handler:      router,
+		Addr:         fmt.Sprintf("127.0.0.1:%s", port),
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  15 * time.Second,
+	}
 
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	log.Printf("KV Store Api started on port %s", port)
+
+	log.Fatal(srv.ListenAndServe())
 
 }
