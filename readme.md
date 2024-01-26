@@ -2,13 +2,11 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A Key Value Store Microservice written in Go.
+A [Microservice](https://microservices.io/) for Key-Value Storage
 
 ## Features
 - Multi Tenancy
-- Authentication
 - Authorization
-- CLI
 - REST API
 
 ## Prerequisites
@@ -24,6 +22,9 @@ A Key Value Store Microservice written in Go.
    cd kv-store-go
    ```
 
-
 ## Usage
 
+
+## Roadmap
+
+- [ ] CLI wrapper over the api
