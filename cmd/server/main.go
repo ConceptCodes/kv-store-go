@@ -42,6 +42,7 @@ func Run() {
 
 	router.Use(middlewares.TraceRequest)
 	router.Use(middlewares.RequestLogger)
+	router.Use(middlewares.ContentTypeJSON)
 	// router.NotFoundHandler = middlewares.NotFound(nil)
 
 	router.HandleFunc("/api/health/alive", healthHandler.ServiceAliveHandler).Methods("GET")
