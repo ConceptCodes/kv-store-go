@@ -32,15 +32,17 @@ func noSQLKeywords(fl validator.FieldLevel) bool {
 
 func ValidateStruct(w http.ResponseWriter, s interface{}) {
 	log := logger.GetLogger()
-	log.Debug().Interface("struct", s).Msgf("Validating struct: %v", s)
-	
+	log.Debug().Interface("struct", s).Msg("Validating Request Data")
+
 	err := validate.Struct(s)
 	if err != nil {
+		log.Error().Err(err).Msg("Invalid Request Data")
 		var errMsgs []string
 		for _, err := range err.(validator.ValidationErrors) {
 			errMsgs = append(errMsgs, fmt.Sprintf("Field validation for '%s' failed on the '%s' tag", err.Field(), err.Tag()))
 		}
 		SendErrorResponse(w, strings.Join(errMsgs, ", "), constants.BadRequest)
+		return
 	}
 	return
 }

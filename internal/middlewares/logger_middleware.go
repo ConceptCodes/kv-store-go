@@ -2,8 +2,9 @@ package middlewares
 
 import (
 	"bytes"
-	"net/http"
 	"kv-store/pkg/logger"
+	"net/http"
+	"time"
 )
 
 type responseWriter struct {
@@ -17,41 +18,29 @@ func (rw *responseWriter) Write(b []byte) (int, error) {
 	return rw.ResponseWriter.Write(b)
 }
 
-func LogRequest(next http.Handler) http.Handler {
+func RequestLogger(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		log := logger.GetLoggerWithContext(r.Context())
-
-		log.
-			Info().
-			Str("method", r.Method).
-			Str("url", r.URL.RequestURI()).
-			Str("user_agent", r.UserAgent())
-
-		if r.Method == "POST" || r.Method == "PUT" {
-			r.ParseForm()
-			log.Info().Interface("data", r.Form).Msg("Request Data")
-		}
-
-		next.ServeHTTP(w, r)
-
-	})
-}
-
-func LogResponse(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		rw := &responseWriter{ResponseWriter: w, body: &bytes.Buffer{}}
-		log := logger.GetLoggerWithContext(r.Context())
+
+		start := time.Now()
 
 		log.
 			Info().
 			Str("method", r.Method).
 			Str("url", r.URL.RequestURI()).
 			Str("user_agent", r.UserAgent()).
-			Interface("response", rw.body.String()).
-			Int("status_code", rw.statusCode)
+			Dur("elapsed_ms", time.Since(start)).
+			Int("status_code", rw.statusCode).
+			Msgf("Incoming %s request", r.Method)
 
-		next.ServeHTTP(rw, r)
+		next.ServeHTTP(w, r)
+
 	})
+}
+
+func (lrw *responseWriter) WriteHeader(code int) {
+	lrw.statusCode = code
+	lrw.ResponseWriter.WriteHeader(code)
 }

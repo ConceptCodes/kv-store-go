@@ -41,8 +41,7 @@ func Run() {
 	router := mux.NewRouter()
 
 	router.Use(middlewares.TraceRequest)
-	router.Use(middlewares.LogRequest)
-	router.Use(middlewares.LogResponse)
+	router.Use(middlewares.RequestLogger)
 	// router.NotFoundHandler = middlewares.NotFound(nil)
 
 	router.HandleFunc("/api/health/alive", healthHandler.ServiceAliveHandler).Methods("GET")
@@ -66,11 +65,10 @@ func Run() {
 
 	helpers.RecordDeletionCronJob(c, recordRepo)
 
-	err = srv.ListenAndServe()
-
-	if err != nil {
-		log.Fatal().Err(err).Msg("Error while starting server")
-	}
+	log.
+		Fatal().
+		Err(srv.ListenAndServe()).
+		Msg("Error while starting server")
 
 	select {}
 

@@ -19,5 +19,5 @@ type GetRecordResponse struct {
 type SaveRecordRequest struct {
 	Key   string `json:"key" validate:"required,noSQLKeywords"`
 	Value string `json:"value" validate:"required,noSQLKeywords"`
-	TTL   uint   `json:"ttl"`
+	TTL   int    `json:"ttl"`
 }

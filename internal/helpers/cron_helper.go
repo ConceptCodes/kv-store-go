@@ -2,6 +2,7 @@ package helpers
 
 import (
 	"fmt"
+	"time"
 
 	_cron "github.com/robfig/cron/v3"
 
@@ -14,11 +15,11 @@ import (
 
 func RecordDeletionCronJob(c *_cron.Cron, recordRepo repository.RecordRepository) {
 
-	time := fmt.Sprintf("@every %ds", config.AppConfig.DefaultTTL+constants.CronDelayInSeconds)
+	_time := fmt.Sprintf("@every %ds", config.AppConfig.DefaultTTL+constants.CronDelayInSeconds)
 
 	log := logger.GetLogger()
 
-	_, err := cron.AddJob(c, time, func() {
+	_, err := cron.AddJob(c, _time, func() {
 		records, err := recordRepo.FindExpiredRecords()
 		if err != nil {
 			log.Error().Err(err).Msg("Error while fetching expired records")
@@ -33,7 +34,8 @@ func RecordDeletionCronJob(c *_cron.Cron, recordRepo repository.RecordRepository
 			}
 		}
 
-		log.Debug().Int("count", len(records)).Msgf("Deleted %d expired records.", len(records))
+		log.Debug().Int("count", len(records)).Msgf("Deleted %d expired records. Next run at %s", len(records),
+			time.Now().Add(time.Duration(config.AppConfig.DefaultTTL)*time.Second).Format(constants.TimeFormat))
 	})
 
 	if err != nil {

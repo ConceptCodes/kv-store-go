@@ -67,7 +67,8 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if data.TTL < config.AppConfig.DefaultTTL {
-		helpers.SendErrorResponse(w, "TTL cannot be less than default TTL", constants.BadRequest)
+		helpers.SendErrorResponse(w, fmt.Sprintf("TTL cannot be less than %d", config.AppConfig.DefaultTTL), constants.BadRequest)
+		return
 	}
 
 	ctx := r.Context().Value("ctx").(*models.Request)
@@ -75,7 +76,7 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 	tmp := &models.RecordModel{
 		ID:        data.Key,
 		Value:     data.Value,
-		ExpiresAt: time.Now().Add(time.Duration(data.TTL) * time.Second),
+		ExpiresAt: time.Now().Local().Add(time.Duration(data.TTL) * time.Second).UTC(),
 		TenantId:  ctx.User.ID,
 	}
 

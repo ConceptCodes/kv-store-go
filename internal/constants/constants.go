@@ -19,7 +19,7 @@ const (
 	FindExpiredRecordsQuery   = "expires_at < DATETIME('now')"
 
 	// Misc
-	CronDelayInSeconds = 10
+	CronDelayInSeconds = 5
 	TraceIdHeader      = "X-Trace-Id"
 	TimeFormat         = "2006-01-02 15:04:05"
 
