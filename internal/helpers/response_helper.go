@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"kv-store/internal/constants"
 	"kv-store/internal/models"
+	"kv-store/pkg/logger"
 	"net/http"
 )
 
@@ -13,19 +14,21 @@ func SendSuccessResponse(w http.ResponseWriter, message string, data interface{}
 		Data:    data,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 	w.WriteHeader(http.StatusOK)
 }
 
-func SendErrorResponse(w http.ResponseWriter, message string, errorCode string) {
+func SendErrorResponse(w http.ResponseWriter, message string, errorCode string, err error) {
+
+	log := logger.GetLogger()
+
+	log.Error().Err(err).Msg(message)
 
 	response := models.Response{
 		Message:   message,
 		ErrorCode: errorCode,
 	}
 
-	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 	switch errorCode {
 	case constants.NotFound:

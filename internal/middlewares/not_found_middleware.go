@@ -8,7 +8,7 @@ import (
 
 func NotFound(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		helpers.SendErrorResponse(w, "Not Found", constants.NotFound)
+		helpers.SendErrorResponse(w, "Not Found", constants.NotFound, nil)
 		return
 	})
 }

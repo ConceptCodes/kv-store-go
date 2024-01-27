@@ -25,6 +25,18 @@ func NewRecordHandler(recordRepo repository.RecordRepository) *RecordHandler {
 	return &RecordHandler{recordRepo: recordRepo}
 }
 
+// GetRecordHandler godoc
+// @Summary Get Record
+// @Description Get Record
+// @Tags Record
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Record ID"
+// @Success 200 {object} GetRecordResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 404 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /records/{id} [get]
 func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	req := ctx.Value("ctx").(*models.Request)
@@ -36,7 +48,7 @@ func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request)
 
 	if err != nil {
 		message := fmt.Sprintf(constants.EntityNotFound, "Record", id)
-		helpers.SendErrorResponse(w, message, constants.NotFound)
+		helpers.SendErrorResponse(w, message, constants.NotFound, err)
 		return
 	}
 
@@ -50,13 +62,25 @@ func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request)
 	return
 }
 
+// SaveRecordHandler godoc
+// @Summary Save Record
+// @Description Save Record
+// @Tags Record
+// @Accept  json
+// @Produce  json
+// @Param id path string true "Record ID"
+// @Param body body SaveRecordRequest true "Record"
+// @Success 200 {object} GetRecordResponse
+// @Failure 400 {object} ErrorResponse
+// @Failure 500 {object} ErrorResponse
+// @Router /records [post]
 func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request) {
 	var data models.SaveRecordRequest
 
 	err := json.NewDecoder(r.Body).Decode(&data)
 
 	if err != nil {
-		helpers.SendErrorResponse(w, err.Error(), constants.BadRequest)
+		helpers.SendErrorResponse(w, err.Error(), constants.BadRequest, err)
 		return
 	}
 
@@ -67,7 +91,7 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	if data.TTL < config.AppConfig.DefaultTTL {
-		helpers.SendErrorResponse(w, fmt.Sprintf("TTL cannot be less than %d", config.AppConfig.DefaultTTL), constants.BadRequest)
+		helpers.SendErrorResponse(w, fmt.Sprintf("TTL cannot be less than %d", config.AppConfig.DefaultTTL), constants.BadRequest, nil)
 		return
 	}
 
@@ -83,7 +107,7 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 	err = h.recordRepo.Save(tmp)
 
 	if err != nil {
-		helpers.SendErrorResponse(w, "Unable to save record. Please try again.", constants.InternalServerError)
+		helpers.SendErrorResponse(w, "Unable to save record. Please try again.", constants.InternalServerError, err)
 		return
 	}
 

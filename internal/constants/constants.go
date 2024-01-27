@@ -1,7 +1,5 @@
 package constants
 
-type Status int
-
 const (
 	// Error codes
 	NotFound            = "KV-404"
@@ -11,7 +9,8 @@ const (
 	InternalServerError = "KV-500"
 
 	// Messages
-	EntityNotFound = "%s with id %s not found"
+	EntityNotFound  = "%s with id %s does not exist."
+	SaveEntityError = "Error while saving %s."
 
 	// Queries
 	FindByIdQuery             = "id = ?"
@@ -20,12 +19,6 @@ const (
 
 	// Misc
 	CronDelayInSeconds = 5
-	TraceIdHeader      = "X-Trace-Id"
 	TimeFormat         = "2006-01-02 15:04:05"
-
-	// Logger
-	StatusUnknown Status = iota
-	StatusStarted
-	StatusInProgress
-	StatusCompleted
+	TraceIdHeader      = "X-Trace-Id"
 )
