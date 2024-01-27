@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"kv-store/pkg/constants"
-	"kv-store/pkg/helpers"
-	"kv-store/pkg/models"
-	repository "kv-store/pkg/repositories"
+	"kv-store/internal/constants"
+	"kv-store/internal/helpers"
+	"kv-store/internal/models"
+	repository "kv-store/internal/repositories"
 	"net/http"
 
 	"github.com/google/uuid"

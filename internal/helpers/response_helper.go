@@ -2,7 +2,8 @@ package helpers
 
 import (
 	"encoding/json"
-	"kv-store/pkg/models"
+	"kv-store/internal/constants"
+	"kv-store/internal/models"
 	"net/http"
 )
 
@@ -27,13 +28,17 @@ func SendErrorResponse(w http.ResponseWriter, message string, errorCode string) 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(response)
 	switch errorCode {
-	case "KV-404":
+	case constants.NotFound:
 		w.WriteHeader(http.StatusNotFound)
-	case "KV-401":
+	case constants.Unauthorized:
 		w.WriteHeader(http.StatusUnauthorized)
-	case "KV-403":
+	case constants.InternalServerError:
+		w.WriteHeader(http.StatusInternalServerError)
+	case constants.Forbidden:
 		w.WriteHeader(http.StatusForbidden)
-	case "KV-500":
+	case constants.BadRequest:
+		w.WriteHeader(http.StatusBadRequest)
+	default:
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }

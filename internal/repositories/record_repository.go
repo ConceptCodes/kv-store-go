@@ -3,8 +3,8 @@ package repository
 import (
 	"gorm.io/gorm"
 
-	"kv-store/pkg/constants"
-	"kv-store/pkg/models"
+	"kv-store/internal/constants"
+	"kv-store/internal/models"
 )
 
 type RecordRepository interface {

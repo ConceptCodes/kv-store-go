@@ -1,7 +1,8 @@
 package config
 
 import (
-	"log"
+	"kv-store/pkg/logger"
+	_log "log"
 
 	"github.com/spf13/viper"
 )
@@ -15,16 +16,17 @@ type Config struct {
 var AppConfig *Config
 
 func LoadAppConfig() {
-	log.Println("Loading Server Configurations...")
+	log := logger.GetLogger()
+	log.Debug().Msg("Loading Server Configurations...")
 	viper.AddConfigPath(".")
 	viper.SetConfigName("config")
 	viper.SetConfigType("json")
 	err := viper.ReadInConfig()
 	if err != nil {
-		log.Fatal(err)
+		_log.Fatal(err)
 	}
 	err = viper.Unmarshal(&AppConfig)
 	if err != nil {
-		log.Fatal(err)
+		_log.Fatal(err)
 	}
 }

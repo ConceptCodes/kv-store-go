@@ -27,7 +27,7 @@ A [Microservice](https://microservices.io/) for Key-Value Storage
 1. Run the server
 
   ```sh
-  go run cmd/server/main.go
+  gow run cmd/server/main.go
   ```
 
 2. Verify that the service is running

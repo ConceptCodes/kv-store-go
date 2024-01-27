@@ -3,24 +3,30 @@ package helpers
 import (
 	"encoding/base64"
 	"errors"
-	"kv-store/pkg/models"
-	repository "kv-store/pkg/repositories"
+	"kv-store/internal/models"
+	repository "kv-store/internal/repositories"
+	"kv-store/pkg/logger"
 	"kv-store/pkg/storage/sqlite"
-	"log"
 	"strings"
 )
 
 func ValidateToken(token string) (*models.UserModel, error) {
 	db, err := sqlite.GetDBInstance()
 
+	log := logger.GetLogger()
+
 	if err != nil {
-		log.Print(err)
+		log.Error().Err(err).Msg("Error getting db instance")
 	}
+
+	log.Debug().Msgf("Validating token: %s", token)
 
 	tenantRepo := repository.NewGormTenantRepository(db)
 
 	data, err := base64.StdEncoding.DecodeString(token)
+
 	if err != nil {
+		log.Error().Err(err).Msg("Error decoding token")
 		return nil, err
 	}
 

@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"kv-store/internal/helpers"
 	"net/http"
-	"kv-store/pkg/helpers"
 )
 
 type HealthHandler struct{}

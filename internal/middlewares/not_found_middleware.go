@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"kv-store/pkg/constants"
-	"kv-store/pkg/helpers"
+	"kv-store/internal/constants"
+	"kv-store/internal/helpers"
 	"net/http"
 )
 

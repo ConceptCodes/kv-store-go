@@ -3,17 +3,16 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
 
-	"kv-store/pkg/config"
-	"kv-store/pkg/constants"
-	"kv-store/pkg/helpers"
-	"kv-store/pkg/models"
-	repository "kv-store/pkg/repositories"
+	"kv-store/config"
+	"kv-store/internal/constants"
+	"kv-store/internal/helpers"
+	"kv-store/internal/models"
+	repository "kv-store/internal/repositories"
 )
 
 type RecordHandler struct {
@@ -27,14 +26,13 @@ func NewRecordHandler(recordRepo repository.RecordRepository) *RecordHandler {
 }
 
 func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context().Value("ctx").(*models.Request)
+	ctx := r.Context()
+	req := ctx.Value("ctx").(*models.Request)
 
 	vars := mux.Vars(r)
 	id := vars["id"]
 
-	record, err := h.recordRepo.FindById(ctx.User.ID, id)
-
-	log.Printf("Tenant [%s] is looking for a record with id: %s", ctx.User.ID, id)
+	record, err := h.recordRepo.FindById(req.User.ID, id)
 
 	if err != nil {
 		message := fmt.Sprintf(constants.EntityNotFound, "Record", id)
@@ -42,9 +40,10 @@ func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	res := &models.SimpleRecordResponse{
-		Key:   record.ID,
-		Value: record.Value,
+	res := &models.GetRecordResponse{
+		Key:     record.ID,
+		Value:   record.Value,
+		Expires: record.ExpiresAt.Format(constants.TimeFormat),
 	}
 
 	helpers.SendSuccessResponse(w, "Record Found Successfully", res)
@@ -87,9 +86,10 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	res := &models.SimpleRecordResponse{
-		Key:   tmp.ID,
-		Value: tmp.Value,
+	res := &models.GetRecordResponse{
+		Key:     tmp.ID,
+		Value:   tmp.Value,
+		Expires: tmp.ExpiresAt.Format(constants.TimeFormat),
 	}
 
 	helpers.SendSuccessResponse(w, "Successfully saved record.", res)

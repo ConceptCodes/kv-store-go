@@ -1,5 +1,7 @@
 package constants
 
+type Status int
+
 const (
 	// Error codes
 	NotFound            = "KV-404"
@@ -16,13 +18,14 @@ const (
 	FindByTenantIdAndKeyQuery = "tenant_id = ? AND id = ?"
 	FindExpiredRecordsQuery   = "expires_at < DATETIME('now')"
 
-	// Cron
-	BufferTime = 10
-
-	// Headers
-	TraceIdHeader = "X-Trace-Id"
-
 	// Misc
-	Separator = "============================================================================"
+	CronDelayInSeconds = 10
+	TraceIdHeader      = "X-Trace-Id"
+	TimeFormat         = "2006-01-02 15:04:05"
 
+	// Logger
+	StatusUnknown Status = iota
+	StatusStarted
+	StatusInProgress
+	StatusCompleted
 )

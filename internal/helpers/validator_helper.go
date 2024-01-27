@@ -5,7 +5,8 @@ import (
 	"net/http"
 	"strings"
 
-	"kv-store/pkg/constants"
+	"kv-store/internal/constants"
+	"kv-store/pkg/logger"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -30,6 +31,9 @@ func noSQLKeywords(fl validator.FieldLevel) bool {
 }
 
 func ValidateStruct(w http.ResponseWriter, s interface{}) {
+	log := logger.GetLogger()
+	log.Debug().Interface("struct", s).Msgf("Validating struct: %v", s)
+	
 	err := validate.Struct(s)
 	if err != nil {
 		var errMsgs []string

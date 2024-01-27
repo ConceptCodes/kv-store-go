@@ -1,31 +1,32 @@
-package main
+package server
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
 	_cron "github.com/robfig/cron/v3"
 
-	"kv-store/pkg/config"
-	"kv-store/pkg/handlers"
-	"kv-store/pkg/helpers"
-	"kv-store/pkg/middlewares"
-	"kv-store/pkg/models"
-	repository "kv-store/pkg/repositories"
+	"kv-store/config"
+	"kv-store/internal/handlers"
+	"kv-store/internal/helpers"
+	"kv-store/internal/middlewares"
+	"kv-store/internal/models"
+	repository "kv-store/internal/repositories"
+	"kv-store/pkg/logger"
 	"kv-store/pkg/storage/sqlite"
 )
 
-func main() {
+func Run() {
 
 	config.LoadAppConfig()
 
 	db, err := sqlite.GetDBInstance()
+	log := logger.GetLogger()
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal().Err(err).Msg("Error while connecting to database")
 	}
 
 	db.AutoMigrate(&models.TenantModel{}, &models.RecordModel{})
@@ -59,13 +60,17 @@ func main() {
 		ReadTimeout:  time.Duration(config.AppConfig.Timeout) * time.Second,
 	}
 
-	log.Printf("KV Store Api started on port %s", port)
+	log.Debug().Msgf("KV Store Api started on port %s", port)
 
 	c := _cron.New()
 
 	helpers.RecordDeletionCronJob(c, recordRepo)
 
-	log.Fatal(srv.ListenAndServe())
+	err = srv.ListenAndServe()
+
+	if err != nil {
+		log.Fatal().Err(err).Msg("Error while starting server")
+	}
 
 	select {}
 

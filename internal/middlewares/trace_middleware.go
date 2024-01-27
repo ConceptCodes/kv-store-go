@@ -2,15 +2,15 @@ package middlewares
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"strings"
 
 	"github.com/google/uuid"
+	"github.com/rs/zerolog/log"
 
-	"kv-store/pkg/constants"
-	"kv-store/pkg/helpers"
-	"kv-store/pkg/models"
+	"kv-store/internal/constants"
+	"kv-store/internal/helpers"
+	"kv-store/internal/models"
 )
 
 func TraceRequest(next http.Handler) http.Handler {
@@ -33,7 +33,7 @@ func TraceRequest(next http.Handler) http.Handler {
 			_user, err := helpers.ValidateToken(authToken)
 
 			if err != nil {
-				log.Printf("Error: %s", err)
+				log.Error().Str("request_id", requestId).Msgf("Error: %s", err)
 			}
 
 			user = _user

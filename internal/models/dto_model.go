@@ -10,9 +10,10 @@ type GetRecordRequest struct {
 	Key      string `json:"key"`
 }
 
-type SimpleRecordResponse struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
+type GetRecordResponse struct {
+	Key     string `json:"key"`
+	Value   string `json:"value"`
+	Expires string `json:"expires"`
 }
 
 type SaveRecordRequest struct {
@@ -20,5 +21,3 @@ type SaveRecordRequest struct {
 	Value string `json:"value" validate:"required,noSQLKeywords"`
 	TTL   uint   `json:"ttl"`
 }
-
-
