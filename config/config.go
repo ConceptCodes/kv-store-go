@@ -8,9 +8,13 @@ import (
 )
 
 type Config struct {
-	DefaultTTL int `mapstructure:"default_ttl"`
-	Port       int `mapstructure:"port"`
-	Timeout    int `mapstructure:"timeout"`
+	DefaultTTL    int    `mapstructure:"default_ttl"`
+	Port          int    `mapstructure:"port"`
+	Timeout       int    `mapstructure:"timeout"`
+	RedisHost     string `mapstructure:"redis_host"`
+	RedisPort     int    `mapstructure:"redis_port"`
+	RedisPassword string `mapstructure:"redis_password"`
+	RedisDB       int    `mapstructure:"redis_db"`
 }
 
 var AppConfig *Config

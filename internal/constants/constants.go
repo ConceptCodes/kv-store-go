@@ -1,5 +1,7 @@
 package constants
 
+import "time"
+
 const (
 	// Error codes
 	NotFound            = "KV-404"
@@ -9,8 +11,10 @@ const (
 	InternalServerError = "KV-500"
 
 	// Messages
-	EntityNotFound  = "%s with id %s does not exist."
-	SaveEntityError = "Error while saving %s."
+	EntityNotFound     = "%s with id %s does not exist."
+	SaveEntityError    = "Error while saving %s."
+	HealthCheckMessage = "Performing Health check for %s"
+	HealthCheckError   = "Error while performing health check for %s"
 
 	// Queries
 	FindByIdQuery             = "id = ?"
@@ -21,4 +25,5 @@ const (
 	CronDelayInSeconds = 5
 	TimeFormat         = "2006-01-02 15:04:05"
 	TraceIdHeader      = "X-Trace-Id"
+	DefaultRedisTtl    = 30 * time.Second
 )
