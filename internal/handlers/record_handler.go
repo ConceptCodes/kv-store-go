@@ -12,17 +12,19 @@ import (
 	"kv-store/internal/constants"
 	"kv-store/internal/helpers"
 	"kv-store/internal/models"
-	repository "kv-store/internal/repositories"
+	"kv-store/pkg/storage/redis"
 )
 
 type RecordHandler struct {
-	recordRepo repository.RecordRepository
+	redis *redis.Redis
 }
 
 var err error
 
-func NewRecordHandler(recordRepo repository.RecordRepository) *RecordHandler {
-	return &RecordHandler{recordRepo: recordRepo}
+func NewRecordHandler(_redis *redis.Redis) *RecordHandler {
+	return &RecordHandler{
+		redis: _redis,
+	}
 }
 
 // GetRecordHandler godoc
@@ -42,20 +44,21 @@ func (h *RecordHandler) GetRecordHandler(w http.ResponseWriter, r *http.Request)
 	req := ctx.Value("ctx").(*models.Request)
 
 	vars := mux.Vars(r)
-	id := vars["id"]
+	key := vars["key"]
 
-	record, err := h.recordRepo.FindById(req.User.ID, id)
+	compoundKey := fmt.Sprintf("%s:%s", req.User.ID, key)
+
+	record, err := h.redis.GetData(compoundKey)
 
 	if err != nil {
-		message := fmt.Sprintf(constants.EntityNotFound, "Record", id)
+		message := fmt.Sprintf(constants.EntityNotFound, "Record", compoundKey)
 		helpers.SendErrorResponse(w, message, constants.NotFound, err)
 		return
 	}
 
 	res := &models.GetRecordResponse{
-		Key:     record.ID,
-		Value:   record.Value,
-		Expires: record.ExpiresAt.Format(constants.TimeFormat),
+		Key:   key,
+		Value: record,
 	}
 
 	helpers.SendSuccessResponse(w, "Record Found Successfully", res)
@@ -97,14 +100,9 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 
 	ctx := r.Context().Value("ctx").(*models.Request)
 
-	tmp := &models.RecordModel{
-		ID:        data.Key,
-		Value:     data.Value,
-		ExpiresAt: time.Now().Local().Add(time.Duration(data.TTL) * time.Second).UTC(),
-		TenantId:  ctx.User.ID,
-	}
+	key := fmt.Sprintf("%s:%s", ctx.User.ID, data.Key)
 
-	err = h.recordRepo.Save(tmp)
+	err = h.redis.SetData(key, data.Value, time.Duration(data.TTL)*time.Second)
 
 	if err != nil {
 		helpers.SendErrorResponse(w, "Unable to save record. Please try again.", constants.InternalServerError, err)
@@ -112,9 +110,9 @@ func (h *RecordHandler) SaveRecordHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	res := &models.GetRecordResponse{
-		Key:     tmp.ID,
-		Value:   tmp.Value,
-		Expires: tmp.ExpiresAt.Format(constants.TimeFormat),
+		Key:     data.Key,
+		Value:   data.Value,
+		Expires: time.Now().Add(time.Duration(data.TTL) * time.Second).Format(time.RFC3339),
 	}
 
 	helpers.SendSuccessResponse(w, "Successfully saved record.", res)

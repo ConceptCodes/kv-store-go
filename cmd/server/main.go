@@ -6,15 +6,14 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	_cron "github.com/robfig/cron/v3"
 
 	"kv-store/config"
 	"kv-store/internal/handlers"
-	"kv-store/internal/helpers"
 	"kv-store/internal/middlewares"
 	"kv-store/internal/models"
 	repository "kv-store/internal/repositories"
 	"kv-store/pkg/logger"
+	"kv-store/pkg/storage/redis"
 	"kv-store/pkg/storage/sqlite"
 )
 
@@ -29,27 +28,26 @@ func Run() {
 		log.Fatal().Err(err).Msg("Error while connecting to database")
 	}
 
-	db.AutoMigrate(&models.TenantModel{}, &models.RecordModel{})
+	db.AutoMigrate(&models.TenantModel{})
 
-	recordRepo := repository.NewGormRecordRepository(db)
+	_redis := redis.New()
+
 	tenantRepo := repository.NewGormTenantRepository(db)
 
 	healthHandler := handlers.NewHealthHandler()
 	tenantHandler := handlers.NewTenantHandler(tenantRepo)
-	recordHandler := handlers.NewRecordHandler(recordRepo)
+	recordHandler := handlers.NewRecordHandler(_redis)
 
 	router := mux.NewRouter()
 
 	router.Use(middlewares.TraceRequest)
 	router.Use(middlewares.RequestLogger)
 	router.Use(middlewares.ContentTypeJSON)
-	// router.NotFoundHandler = middlewares.NotFound(nil)
+	router.NotFoundHandler = middlewares.NotFound(nil)
 
 	router.HandleFunc("/api/health/alive", healthHandler.ServiceAliveHandler).Methods("GET")
-
 	router.HandleFunc("/api/tenant/onboard", tenantHandler.OnboardTenantHandler).Methods("GET")
-
-	router.HandleFunc("/api/records/{id}", recordHandler.GetRecordHandler).Methods("GET")
+	router.HandleFunc("/api/records/{key}", recordHandler.GetRecordHandler).Methods("GET")
 	router.HandleFunc("/api/records", recordHandler.SaveRecordHandler).Methods("POST")
 
 	port := fmt.Sprint(config.AppConfig.Port)
@@ -61,10 +59,6 @@ func Run() {
 	}
 
 	log.Debug().Msgf("KV Store Api started on port %s", port)
-
-	c := _cron.New()
-
-	helpers.RecordDeletionCronJob(c, recordRepo)
 
 	log.
 		Fatal().
